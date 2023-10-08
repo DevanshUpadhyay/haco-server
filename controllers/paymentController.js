@@ -6,7 +6,7 @@ import crypto from "crypto";
 import { Course } from "../models/Course.js";
 import fetch from "node-fetch";
 
-// buy subscription
+// buy subscription ..
 export const buySubscription = catchAsyncErrors(async (req, res, next) => {
   const { courseId, payerId, createdAt, emailAddress, transactionId } =
     req.body;
