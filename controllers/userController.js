@@ -156,7 +156,7 @@ export const getmyProfile = catchAsyncErrors(async (req, res, next) => {
     user,
   });
 });
-// change/update password
+
 export const changePassword = catchAsyncErrors(async (req, res, next) => {
   const { oldPassword, newPassword } = req.body;
 
