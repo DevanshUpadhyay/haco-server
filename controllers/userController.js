@@ -96,7 +96,7 @@ export const login = catchAsyncErrors(async (req, res, next) => {
   if (!email || !password) {
     return next(new ErrorHandler("Please Enter Email and Password", 400));
   }
-  const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOne({ email }).select("+password -otp");
 
   if (!user) {
     return next(new ErrorHandler("Invalid email or password", 401));
@@ -117,11 +117,11 @@ export const logout = catchAsyncErrors(async (req, res, next) => {
     .cookie("token", null, {
       expires: new Date(Date.now()),
       // maxAge: -1,
-      // httpOnly: true,
-      // secure: true,
-      // sameSite: "none",
-      // domain: "https://www.haco.study",
-      // path: "/",
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      domain: "https://www.haco.study",
+      path: "/",
     })
     // .clearCookie("token", {
     //   expires: new Date(Date.now()),
@@ -159,6 +159,7 @@ export const getmyProfile = catchAsyncErrors(async (req, res, next) => {
 // change/update password
 export const changePassword = catchAsyncErrors(async (req, res, next) => {
   const { oldPassword, newPassword } = req.body;
+
   if (!oldPassword || !newPassword) {
     return next(new ErrorHandler("Please enter all fields", 400));
   }
@@ -198,7 +199,9 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
 
 export const updateProfilePicture = catchAsyncErrors(async (req, res, next) => {
   const file = req.file;
+  // console.log(file);
   const user = await User.findById(req.user._id);
+  // console.log(user);
   const fileUri = getDataUri(file);
   const myCloud = await cloudinary.v2.uploader.upload(fileUri.content);
 
@@ -208,7 +211,7 @@ export const updateProfilePicture = catchAsyncErrors(async (req, res, next) => {
     url: myCloud.secure_url,
   };
   await user.save();
-
+  // console.log("hello");
   res.status(200).json({
     success: true,
     message: "Profile Picture updated Successfully",
@@ -229,7 +232,7 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
   // const resetPasswordUrl = `${req.protocol}://${req.get(
   //   "host"
   // )}/api/v1/resetpassword/${resetToken}`;
-  const resetPasswordUrl = `${process.env.FRONTEND_URL}/resetpassword/${resetToken}`;
+  const resetPasswordUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
 
   const message = `Your password reset token is :-\n\n ${resetPasswordUrl} \n\n If you did not request this email then please ignore it`;
 
@@ -278,116 +281,7 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
     message: "Password change successfully",
   });
 });
-// add to playlist
-export const addToPlaylist = catchAsyncErrors(async (req, res, next) => {
-  const user = await User.findById(req.user._id);
-  const course = await Course.findById(req.body.id);
-  if (!course) {
-    return next(new ErrorHandler("Invalid Course Id", 404));
-  }
-  const itemExist = user.playlist.find((item) => {
-    if (item.course.toString() === course._id.toString()) return true;
-  });
-  if (itemExist) {
-    return next(new ErrorHandler("Item Alredy Exist", 409));
-  }
-  user.playlist.push({
-    course: course._id,
-    poster: course.poster.url,
-  });
-  await user.save();
-  res.status(200).json({
-    success: true,
-    message: "Added To playlist",
-  });
-});
-// remove from playlist
-export const removeFromPlaylist = catchAsyncErrors(async (req, res, next) => {
-  const user = await User.findById(req.user._id);
-  const course = await Course.findById(req.query.id);
-  if (!course) {
-    return next(new ErrorHandler("Invalid Course Id", 404));
-  }
-  const newPlaylist = user.playlist.filter((item) => {
-    if (item.course.toString() !== course._id.toString()) return item;
-  });
-  user.playlist = newPlaylist;
 
-  await user.save();
-  res.status(200).json({
-    success: true,
-    message: "Removed from playlist",
-  });
-});
-
-// for admin controllers
-
-// get all users
-export const getAllUsers = catchAsyncErrors(async (req, res, next) => {
-  const users = await User.find({});
-  res.status(200).json({
-    success: true,
-    users,
-  });
-});
-
-// update user role
-export const updateUserRole = catchAsyncErrors(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
-  if (!user) {
-    return next(new ErrorHandler("User Not Found", 404));
-  }
-
-  if (user.plan === "inactive") {
-    user.plan = "active";
-  } else {
-    user.plan = "inactive";
-  }
-  await user.save();
-  res.status(200).json({
-    success: true,
-    message: `Plan is changed from ${
-      user.plan === "inactive" ? "active" : "inactive"
-    } to ${user.plan === "inactive" ? "inactive" : "active"}`,
-  });
-});
-
-// Delete user
-export const deleteUser = catchAsyncErrors(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
-  if (!user) {
-    return next(new ErrorHandler("User Not Found", 404));
-  }
-
-  await cloudinary.v2.uploader.destroy(user.avatar.public_id);
-  // cancel subscription
-  await user.deleteOne();
-  res.status(200).json({
-    success: true,
-    message: "User Deleted Successfully",
-  });
-});
-// Delete my profile
-export const deleteMyProfile = catchAsyncErrors(async (req, res, next) => {
-  const user = await User.findById(req.user._id);
-
-  await cloudinary.v2.uploader.destroy(user.avatar.public_id);
-  // cancel subscription
-  await user.deleteOne();
-  res
-    .status(200)
-    .cookie("token", null, {
-      expires: new Date(Date.now()),
-      httpOnly: true,
-      // don't add secure in local host
-      secure: true,
-      sameSite: "none",
-    })
-    .json({
-      success: true,
-      message: "User Deleted Successfully",
-    });
-});
 // watcher by mongodb
 User.watch().on("change", async () => {
   const stats = await Stats.find({}).sort({ createdAt: "desc" }).limit(1);

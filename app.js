@@ -48,6 +48,7 @@ const CLIENT_ID =
   "AafCCqfG7VCMmjpt-TM-Qu4aCitft5MeOzM_f8lfGI8gywd6vAgWpVp4kqLBkZWYM2dyNzssMf3AUhlg";
 const APP_SECRET = process.env.APP_SECRET;
 const base = "https://api-m.paypal.com";
+
 const generateAccessToken = async () => {
   try {
     const auth = Buffer.from(CLIENT_ID + ":" + APP_SECRET).toString("base64");
