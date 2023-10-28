@@ -38,7 +38,7 @@ app.use("/api/v1", blog);
 
 app.get("/", (req, res) => {
   res.send(
-    `<h1>Server is Working Fine. Please Click <a href=${process.env.FRONTEND_URL}>here</a> to visit the Frontend </h1>`
+    `<h1>Server is Working Fine. Please Click <a href=${process.env.FRONTEND_URL}>here</a> to visit the Frontend URL </h1>`
   );
 });
 // const CLIENT_ID = process.env.CLIENT_ID;
