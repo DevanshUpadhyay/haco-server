@@ -135,8 +135,6 @@ app.post("/api/v1/orders/:orderID/capture", async (req, res) => {
   try {
     const { orderID } = req.params;
     const response = await capturePayment(orderID);
-    // console.log(response.payer.payer_id);
-    // console.log(response.payer.email_address);
 
     res.json(response);
   } catch (error) {
