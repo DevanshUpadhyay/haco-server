@@ -20,7 +20,7 @@ export const sendToken = (res, user, message, statusCode = 200) => {
     })
     .json({
       success: true,
-      message,
+      message: token,
       user,
     });
 };
