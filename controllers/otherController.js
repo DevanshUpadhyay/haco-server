@@ -28,12 +28,13 @@ export const submitUserDetails = catchAsyncErrors(async (req, res, next) => {
     text: userText,
     phoneNumber,
     country,
+    email,
   } = req.body;
 
   const to = process.env.MY_MAIL;
   const subject = "Contact from haco";
 
-  const text = `${who}\n${level}\n${grade}\n${userSubject}\n${country}\n${phoneNumber}\n${userText}`;
+  const text = `${who}\n${level}\n${grade}\n${userSubject}\n${country}\n${email}\n${phoneNumber}\n${userText}`;
   await sendEmail(to, subject, text);
   res.status(200).json({
     success: true,
