@@ -27,8 +27,6 @@ import blog from "./routes/blogRoutes.js";
 import user from "./routes/userRoutes.js";
 import payment from "./routes/paymentRoutes.js";
 import other from "./routes/otherRoutes.js";
-import { User } from "./models/User.js";
-import { Course } from "./models/Course.js";
 
 app.use("/api/v1", course);
 app.use("/api/v1", user);
@@ -38,17 +36,16 @@ app.use("/api/v1", blog);
 
 app.get("/", (req, res) => {
   res.send(
-    `<h1>Server is Working Fine. Please Click <a href=${process.env.FRONTEND_URL}>here</a> to visit the Frontend URL </h1>`
+    `<h1>Server is Working Fine. Please Click <a href=${process.env.FRONTEND_URL}>here</a> to visit the Frontend </h1>`
   );
 });
 // const CLIENT_ID = process.env.CLIENT_ID;
 // const APP_SECRET = process.env.APP_SECRET;
 // const base = process.env.BASE;
 const CLIENT_ID =
-  "AafCCqfG7VCMmjpt-TM-Qu4aCitft5MeOzM_f8lfGI8gywd6vAgWpVp4kqLBkZWYM2dyNzssMf3AUhlg";
+  "AeZ8iIVY-Dv_pJ0FfnIJSx-Qt36XTZ5Spyl_z-xKVOgLmfxvVRfYpISrQKqulhthGJYQLYdX8lE6QnVT";
 const APP_SECRET = process.env.APP_SECRET;
 const base = "https://api-m.paypal.com";
-
 const generateAccessToken = async () => {
   try {
     const auth = Buffer.from(CLIENT_ID + ":" + APP_SECRET).toString("base64");
@@ -135,6 +132,8 @@ app.post("/api/v1/orders/:orderID/capture", async (req, res) => {
   try {
     const { orderID } = req.params;
     const response = await capturePayment(orderID);
+    // console.log(response.payer.payer_id);
+    // console.log(response.payer.email_address);
 
     res.json(response);
   } catch (error) {

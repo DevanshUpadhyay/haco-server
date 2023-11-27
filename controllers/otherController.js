@@ -34,8 +34,9 @@ export const submitUserDetails = catchAsyncErrors(async (req, res, next) => {
   const to = process.env.MY_MAIL;
   const subject = "Contact from haco";
 
-  const text = `${who}\n${level}\n${grade}\n${userSubject}\n${country}\n${email}\n${phoneNumber}\n${userText}`;
+  const text = `Who - ${who}\nLevel - ${level}\nGrade - ${grade}\nSubject - ${userSubject}\nCountry - ${country}\nEmail - ${email}\nPhone - ${phoneNumber}\nMessage - ${userText}`;
   await sendEmail(to, subject, text);
+  await sendEmail(email, "From Haco", "Your Request is successfull");
   res.status(200).json({
     success: true,
     message: "Your Message has been Sent.",
